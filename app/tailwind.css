@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-gradient-radial from-indigo-700 to-indigo-600 bg-fixed;
+    @apply bg-gradient-to-br from-indigo-700 to-indigo-500 bg-fixed;
     @apply font-Montserrat;
   }
 }

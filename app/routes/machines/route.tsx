@@ -17,17 +17,15 @@ export default function MachineLayout() {
 
   return (
     <>
-      <div className="mt-12 grid grid-cols-[1fr_6fr_1fr]">
-        <div className="col-start-2 grid auto-rows-auto grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {machines.map((machine: Machine, i: number) => (
-            <MachineCard
-              id={machine.id}
-              title={machine.name}
-              status="Available"
-              key={i}
-            />
-          ))}
-        </div>
+      <div className="grid auto-rows-auto grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {machines.map((machine: Machine, i: number) => (
+          <MachineCard
+            id={machine.id}
+            title={machine.name}
+            status="Available"
+            key={i}
+          />
+        ))}
       </div>
       <Outlet />
     </>

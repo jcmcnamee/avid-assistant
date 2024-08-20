@@ -36,7 +36,7 @@ function Modal({ children, onClose }: ModalProps) {
       onClick={handleBackdropClick}
       ref={modalRef}
     >
-      <div className="fixed left-[50%] top-[50%] transform animate-fade-slide-up-modal rounded-lg bg-indigo-50 px-12 py-10 shadow-xl transition-all duration-500">
+      <div className="fixed left-[50%] top-[50%] transform animate-fade-slide-up-modal rounded-lg bg-indigo-50 px-12 py-8 shadow-xl transition-all duration-500">
         <button
           className="absolute right-4 top-4 rounded-sm"
           onClick={onClose}
