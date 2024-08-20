@@ -44,6 +44,42 @@ const machines = [
   {
     name: 'Assist08',
     isHeadless: false
+  },
+  {
+    name: 'Assist09',
+    isHeadless: false
+  },
+  {
+    name: 'Assist10',
+    isHeadless: false
+  },
+  {
+    name: 'Assist11',
+    isHeadless: false
+  },
+  {
+    name: 'Assist12',
+    isHeadless: false
+  },
+  {
+    name: 'Assist13',
+    isHeadless: false
+  },
+  {
+    name: 'Assist14',
+    isHeadless: false
+  },
+  {
+    name: 'Assist15',
+    isHeadless: false
+  },
+  {
+    name: 'Assist16',
+    isHeadless: false
+  },
+  {
+    name: 'Assist17',
+    isHeadless: false
   }
 ];
 

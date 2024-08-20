@@ -1,7 +1,7 @@
 -- CreateTable
 CREATE TABLE "machines" (
     "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
+    "name" VARCHAR(50) NOT NULL,
     "isHeadless" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "machines_pkey" PRIMARY KEY ("id")
@@ -10,7 +10,7 @@ CREATE TABLE "machines" (
 -- CreateTable
 CREATE TABLE "app_users" (
     "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
+    "name" VARCHAR(50) NOT NULL,
 
     CONSTRAINT "app_users_pkey" PRIMARY KEY ("id")
 );
@@ -19,6 +19,7 @@ CREATE TABLE "app_users" (
 CREATE TABLE "bookings" (
     "id" SERIAL NOT NULL,
     "startTime" TIMESTAMP(3) NOT NULL,
+    "endTime" TIMESTAMP(3) NOT NULL,
     "machineId" INTEGER NOT NULL,
     "userId" INTEGER NOT NULL,
 
@@ -27,6 +28,9 @@ CREATE TABLE "bookings" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "machines_name_key" ON "machines"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "app_users_name_key" ON "app_users"("name");
 
 -- AddForeignKey
 ALTER TABLE "bookings" ADD CONSTRAINT "bookings_machineId_fkey" FOREIGN KEY ("machineId") REFERENCES "machines"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

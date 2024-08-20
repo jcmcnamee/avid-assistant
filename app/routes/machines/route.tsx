@@ -1,26 +1,36 @@
 import { Machine } from '@prisma/client';
-import { MetaFunction, TypedResponse } from '@remix-run/node';
+import { MetaFunction } from '@remix-run/node';
 import {
   isRouteErrorResponse,
   json,
+  Outlet,
+  ScrollRestoration,
   useLoaderData,
   useRouteError
 } from '@remix-run/react';
 import isAnError from '~/helpers/isAnError';
 import { getMachines } from '~/persistence/repositories/machines.server';
-import MachineCard from '~/UI/MachineCard';
+import MachineCard from './MachineCard';
 
-export default function MachinesMain() {
+export default function MachineLayout() {
   const machines = useLoaderData<typeof loader>();
 
   return (
-    <div className="grid grid-cols-[1fr_6fr_1fr]">
-      <div className="col-start-2 grid auto-rows-auto">
-        {machines.map((machine: Machine, i: number) => (
-          <MachineCard title={machine.name} status="Available" key={i} />
-        ))}
+    <>
+      <div className="mt-12 grid grid-cols-[1fr_6fr_1fr]">
+        <div className="col-start-2 grid auto-rows-auto grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {machines.map((machine: Machine, i: number) => (
+            <MachineCard
+              id={machine.id}
+              title={machine.name}
+              status="Available"
+              key={i}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+      <Outlet />
+    </>
   );
 }
 

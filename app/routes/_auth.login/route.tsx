@@ -1,4 +1,4 @@
-import AuthForm from '~/UI/AuthForm';
+import AuthForm from "./AuthForm";
 
 export default function LoginLayout() {
   return <AuthForm />;

@@ -15,12 +15,22 @@ export async function createMachine(machineData: Machine) {
   }
 }
 
-export async function getMachines() {
-  const rawContent = await fs.readFile('./app/persistence/machines.json', {
-    encoding: 'utf-8'
-  });
+// export async function getMachines() {
+//   const rawContent = await fs.readFile('./app/persistence/machines.json', {
+//     encoding: 'utf-8'
+//   });
 
-  const data = JSON.parse(rawContent);
-  const storedMachines = data.machines ?? [];
-  return storedMachines;
+//   const data = JSON.parse(rawContent);
+//   const storedMachines = data.machines ?? [];
+//   return storedMachines;
+// }
+
+export async function getMachines() {
+  try {
+    const machines = prisma.machine.findMany({ orderBy: { id: 'desc' } });
+    return machines;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
 }
