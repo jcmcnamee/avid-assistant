@@ -39,6 +39,10 @@ export default {
       animation: {
         'fade-slide-up': 'fade-slide-up 1.5s ease-out forwards',
         'fade-slide-up-modal': 'fade-slide-up-modal 1.5s ease-out forwards'
+      },
+      gridTemplateRows: {
+        '40': 'repeat(40, 1fr)',
+        '48': 'repeat(48, 1fr)'
       }
     }
   },

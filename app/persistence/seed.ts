@@ -6,7 +6,6 @@ const prisma = new PrismaClient();
 async function seed() {
   try {
     for (const machine of machines) {
-      console.log('Seeding object: ', machine);
       await prisma.machine.create({ data: machine });
     }
   } catch (err) {

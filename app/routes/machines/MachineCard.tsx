@@ -1,6 +1,6 @@
-import { LuBookOpenCheck, LuClock, LuComputer, LuHourglass, LuTimer } from 'react-icons/lu';
-import Button from '../../UI/Button';
 import { Link } from '@remix-run/react';
+import { LuBookOpenCheck, LuComputer, LuTimer } from 'react-icons/lu';
+import Button from '../../UI/Button';
 
 type MachineCardProps = {
   id: number;
@@ -21,19 +21,19 @@ function MachineCard({ id, title, status }: MachineCardProps) {
         </div>
         <div className="flex flex-col justify-evenly gap-2 pl-4">
           <Link to={`./${id}/quick`} className="size-fit">
-            <Button category="secondary">
-              <span className="flex items-center gap-2">
-                <LuTimer className="text-2xl" />
-                Quick book
-              </span>
+            <Button
+              category="secondary"
+              iconLeft={<LuTimer className="text-2xl" />}
+            >
+              Quick book
             </Button>
           </Link>
           <Link to={`./${id}/book`} className="size-fit">
-            <Button category="primary">
-              <span className="flex items-center gap-2">
-                <LuBookOpenCheck className='text-2xl' />
-                Book
-              </span>
+            <Button
+              category="primary"
+              iconLeft={<LuBookOpenCheck className="text-2xl" />}
+            >
+              Book
             </Button>
           </Link>
           <p>Some booking information here</p>

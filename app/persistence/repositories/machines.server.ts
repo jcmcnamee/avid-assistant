@@ -10,9 +10,7 @@ export async function createMachine(machineData: Machine) {
         isHeadless: machineData.isHeadless
       }
     });
-  } catch (err) {
-    console.log(err);
-  }
+  } catch (err) {}
 }
 
 // export async function getMachines() {
@@ -30,7 +28,6 @@ export async function getMachines() {
     const machines = prisma.machine.findMany({ orderBy: { id: 'desc' } });
     return machines;
   } catch (err) {
-    console.log(err);
     throw err;
   }
 }
