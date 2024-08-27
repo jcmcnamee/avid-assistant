@@ -14,9 +14,9 @@ datasource db {
 }
 
 model Machine {
-  id          Int     @id @default(autoincrement())
-  name        String  @unique @db.VarChar(50)
-  isHeadless  Boolean @default(false)
+  id            Int     @id @default(autoincrement())
+  name          String  @unique @db.VarChar(50)
+  isHeadless    Boolean @default(false)
 
   bookings    Booking[]
 
@@ -24,8 +24,8 @@ model Machine {
 }
 
 model AppUser {
-  id          Int     @id @default(autoincrement())
-  name        String  @unique @db.VarChar(50)
+  id            Int     @id @default(autoincrement())
+  name          String  @unique @db.VarChar(50)
 
   bookings    Booking[]
 
@@ -33,14 +33,19 @@ model AppUser {
 }
 
 model Booking {
-  id          Int       @id @default(autoincrement())
-  startTime   DateTime  @map("start_time")
-  endTime     DateTime  @map("end_time")
+  id            Int       @id @default(autoincrement())
+  startTime     DateTime  @db.Timestamptz(0) @map("start_time")
+  endTime       DateTime  @db.Timestamptz(0) @map("end_time")
+  jobType       String    @map("job_type")
+  notes         String?
+  dateCreated   DateTime  @db.Timestamptz(0) @default(now())
+  dateModified  DateTime  @db.Timestamptz(0) @updatedAt
+  
 
-  machine     Machine   @relation(fields: [machineId], references: [id])
-  machineId   Int
-  appUser     AppUser   @relation(fields: [userId], references: [id]) 
-  userId      Int
+  machine       Machine   @relation(fields: [machineId], references: [id])
+  machineId     Int
+  appUser       AppUser   @relation(fields: [userId], references: [id]) 
+  userId        Int
 
   @@map("bookings")
 }

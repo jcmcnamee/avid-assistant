@@ -8,6 +8,7 @@ import {
   setSeconds
 } from 'date-fns';
 import { DateRange } from './DateRange';
+import { Booking } from '@prisma/client';
 
 export const sliceLengths = [
   'row-span-1',
@@ -243,42 +244,42 @@ export function getMinutesOfDay(dateTime: Date): number {
 
 export function invertBookings(
   day: Date,
-  bookings: Array<DateRange>
-): Array<DateRange> {
+  bookings: Array<Booking>
+): Array<Booking> {
   const start = day;
   const end = endOfDay(day);
-  const result: Array<DateRange> = [];
+  const result: Array<Booking> = [];
   let left = 0;
   let right = 0;
 
   if (bookings.length === 0) {
-    return [{ start, end }];
+    return [{ startTime, endTime }];
   }
 
   while (bookings[left] != null) {
     if (right === 0) {
-      if (isAfter(bookings[right].start, start)) {
+      if (isAfter(bookings[right].startTime, start)) {
         result.push({
           start,
-          end: bookings[right].start
+          end: bookings[right].startTime
         });
       }
       right++;
     }
 
     if (bookings[right] != null) {
-      if (isAfter(bookings[right].start, bookings[left].end)) {
+      if (isAfter(bookings[right].startTime, bookings[left].endTime)) {
         result.push({
-          start: bookings[left].end,
-          end: bookings[right].start
+          start: bookings[left].endTime,
+          end: bookings[right].startTime
         });
         right++;
         left++;
       }
     } else {
-      if (isAfter(end, bookings[left].end)) {
+      if (isAfter(end, bookings[left].endTime)) {
         result.push({
-          start: bookings[left].end,
+          start: bookings[left].endTime,
           end
         });
       }

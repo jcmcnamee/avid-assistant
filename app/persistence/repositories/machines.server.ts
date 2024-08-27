@@ -1,6 +1,7 @@
 import { Machine } from '@prisma/client';
 import { prisma } from '../prisma.server';
 import fs from 'fs/promises';
+import { BookingVm } from '~/models/BookingModels';
 
 export async function createMachine(machineData: Machine) {
   try {
@@ -30,4 +31,19 @@ export async function getMachines() {
   } catch (err) {
     throw err;
   }
+}
+
+export async function getMachineBookings(id: string) {
+  console.log('ID: ', id);
+
+  const machineBookings = prisma.machine.findUniqueOrThrow({
+    where: {
+      id: Number(id)
+    },
+    select: {
+      bookings: true
+    }
+  });
+
+  return machineBookings;
 }

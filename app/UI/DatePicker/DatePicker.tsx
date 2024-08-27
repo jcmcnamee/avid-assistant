@@ -4,6 +4,7 @@ import DatePickerColTitle from './DatePickerColTitle';
 import { DateRange } from './DateRange';
 import DayCol from './DayCol';
 import DayColMeasure from './DayColMeasure';
+import { Booking } from '@prisma/client';
 
 export default function DatePicker({
   startDate,
@@ -15,10 +16,10 @@ export default function DatePicker({
 }: {
   startDate: Date;
   numDays: number;
-  bookings: Array<DateRange>;
+  bookings: Array<Booking>;
   colHourStart: number;
   colHourEnd: number;
-  onClick: (booking: DateRange) => void;
+  onClick: (booking: Booking) => void;
 }) {
   return (
     <>
@@ -41,7 +42,7 @@ export default function DatePicker({
               colHourStart={colHourStart}
               colHourEnd={colHourEnd}
               bookings={bookings.filter(b =>
-                isSameDay(b.start, addDays(startDate, index))
+                isSameDay(b.startTime, addDays(startDate, index))
               )}
               onClick={onClick}
             />

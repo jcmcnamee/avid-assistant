@@ -1,13 +1,13 @@
+import { Booking } from '@prisma/client';
 import DatePickerColSlice from './DatePickerColSlice';
 import { getColumnPosition, invertBookings } from './DatePickerHelpers';
-import { DateRange } from './DateRange';
 
 type DayColProps = {
   day: Date;
   colHourStart: number;
   colHourEnd: number;
-  bookings: Array<DateRange>;
-  onClick: (booking: DateRange) => void;
+  bookings: Array<Booking>;
+  onClick: (booking: Booking) => void;
 };
 
 export default function DayCol({
@@ -28,8 +28,8 @@ export default function DayCol({
           <DatePickerColSlice
             key={`slice-${i}`}
             status="booked"
-            start={getColumnPosition(colHourStart, colHourEnd, b.start, 15)}
-            end={getColumnPosition(colHourStart, colHourEnd, b.end, 15)}
+            start={getColumnPosition(colHourStart, colHourEnd, b.startTime, 15)}
+            end={getColumnPosition(colHourStart, colHourEnd, b.endTime, 15)}
             booking={b}
           />
         ))}

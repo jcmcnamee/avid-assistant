@@ -1,14 +1,12 @@
-import { format, getHours } from 'date-fns';
+import { Booking } from '@prisma/client';
 import { sliceEndVals, sliceStartVals } from './DatePickerHelpers';
-import { DateRange } from './DateRange';
-import { MouseEvent } from 'react';
 
 export type DatePickerColSliceProps = {
   status: 'available' | 'booked' | 'unavailable';
   start: number;
   end: number;
-  booking: DateRange;
-  onClick?: (booking: DateRange) => void;
+  booking: Booking;
+  onClick?: (booking: Booking) => void;
 };
 
 export default function DatePickerColSlice({
@@ -19,9 +17,6 @@ export default function DatePickerColSlice({
   onClick
 }: DatePickerColSliceProps) {
 
-  const handleActiveClick = () => {
-    alert(`Start: ${start}, End: ${end}`);
-  };
 
   if (status === 'available')
     return (
