@@ -1,32 +1,32 @@
-import { Booking } from '@prisma/client';
-import { Form, useNavigate, useSubmit } from '@remix-run/react';
-import { format, parseISO, startOfToday } from 'date-fns';
+import { Form, useLoaderData, useNavigate, useSubmit } from '@remix-run/react';
+import { format, startOfToday } from 'date-fns';
 import { useState } from 'react';
 import { LuArrowBigLeft, LuCheck } from 'react-icons/lu';
-import { BookingVm } from '~/models/BookingModels';
 import Button from '~/UI/Button';
 import DatePicker from '~/UI/DatePicker/DatePicker';
 import { DateRange } from '~/UI/DatePicker/DateRange';
-import data from '~/UI/DatePicker/testData.json';
 import Modal from '~/UI/Modal';
+import { loader } from './route';
+import { BookingVm } from '~/models/BookingModels';
+import DatePickerProvider from '~/UI/DatePicker/useDatepicker';
 
 type BookingFormProps = {
   machineId: string;
   userId: string;
-  currentBookings: Booking;
 };
 
-export default function BookingForm({
-  machineId,
-  userId,
-  currentBookings
-}: BookingFormProps) {
+export default function BookingForm({ machineId, userId }: BookingFormProps) {
   const [dateRange, setDateRange] = useState<DateRange | null>(null);
 
   const navigate = useNavigate();
+  const loaderData = useLoaderData<typeof loader>();
   const submit = useSubmit();
 
-  console.log('Current bookings: ', currentBookings);
+  const bookings: BookingVm[] = loaderData.map(booking => ({
+    ...booking,
+    startTime: new Date(booking.startTime),
+    endTime: new Date(booking.endTime)
+  }));
 
   function handleClose() {
     navigate('..');
@@ -35,7 +35,7 @@ export default function BookingForm({
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = Object.fromEntries(new FormData(event.currentTarget));
-    const day = format(new Date(), 'yyyy-MM-dd');
+    const day = format(dateRange!.start, 'yyyy-MM-dd');
 
     const updatedFormData = {
       ...formData,
@@ -45,8 +45,6 @@ export default function BookingForm({
       userId: userId
     };
 
-    console.log('Form data: ', formData);
-
     submit(updatedFormData, { method: 'POST' });
   }
 
@@ -54,27 +52,19 @@ export default function BookingForm({
     setDateRange(booking);
   }
 
-  const bookingData = data.data.map(b => {
-    return {
-      start: parseISO(b.start),
-      end: parseISO(b.end)
-    };
-  });
-
   return (
     <Modal onClose={handleClose}>
       <div className="mb-4 border-b-[1px] border-slate-400">
         <h1 className="text-lg font-medium">Book machine</h1>
       </div>
       {!dateRange?.start ? (
-        <DatePicker
-          startDate={startOfToday()}
-          numDays={5}
-          bookings={currentBookings.bookings}
-          colHourStart={8}
-          colHourEnd={20}
-          onClick={handleSelectDates}
-        />
+        <DatePickerProvider>
+          <DatePicker
+            startDate={startOfToday()}
+            bookings={bookings}
+            onClick={handleSelectDates}
+          />
+        </DatePickerProvider>
       ) : (
         <>
           <Form

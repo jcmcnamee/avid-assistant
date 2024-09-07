@@ -34,14 +34,16 @@ export async function getMachines() {
 }
 
 export async function getMachineBookings(id: string) {
-  console.log('ID: ', id);
-
   const machineBookings = prisma.machine.findUniqueOrThrow({
     where: {
       id: Number(id)
     },
     select: {
-      bookings: true
+      bookings: {
+        orderBy: {
+          startTime: 'asc'
+        }
+      }
     }
   });
 

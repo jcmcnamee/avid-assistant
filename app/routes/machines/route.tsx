@@ -8,7 +8,7 @@ import {
   useLoaderData,
   useRouteError
 } from '@remix-run/react';
-import isAnError from '~/helpers/isAnError';
+import isAnError from '~/utils/isAnError';
 import { getMachines } from '~/persistence/repositories/machines.server';
 import MachineCard from './MachineCard';
 

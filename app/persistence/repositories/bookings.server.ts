@@ -2,7 +2,9 @@ import { Booking } from '@prisma/client';
 import { prisma } from '../prisma.server';
 import { CreateBookingDto } from '~/models/BookingModels';
 
-export async function createBooking(bookingData: CreateBookingDto): Promise<Booking> {
+export async function createBooking(
+  bookingData: CreateBookingDto
+): Promise<Booking> {
   try {
     return await prisma.booking.create({
       data: {
@@ -15,7 +17,6 @@ export async function createBooking(bookingData: CreateBookingDto): Promise<Book
       }
     });
   } catch (err) {
-    console.log(err);
     throw err;
   }
 }

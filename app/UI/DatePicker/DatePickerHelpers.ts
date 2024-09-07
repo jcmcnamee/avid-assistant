@@ -1,14 +1,13 @@
 import {
-  endOfDay,
   getHours,
   getMinutes,
   isAfter,
+  roundToNearestMinutes,
   setHours,
   setMinutes,
   setSeconds
 } from 'date-fns';
 import { DateRange } from './DateRange';
-import { Booking } from '@prisma/client';
 
 export const sliceLengths = [
   'row-span-1',
@@ -229,6 +228,8 @@ export function getColumnPosition(
     cleanedDate = setSeconds(cleanedDate, 0);
   }
 
+  cleanedDate = roundToNearestMinutes(cleanedDate);
+
   return (
     (getMinutesOfDay(cleanedDate) - columnStartHour * 60) / quantizeMinutes
   );
@@ -242,48 +243,52 @@ export function getMinutesOfDay(dateTime: Date): number {
   return result;
 }
 
-export function invertBookings(
-  day: Date,
-  bookings: Array<Booking>
-): Array<Booking> {
-  const start = day;
-  const end = endOfDay(day);
-  const result: Array<Booking> = [];
+export function invertDateRanges(
+  bookings: DateRange[],
+  { start, end }: DateRange
+): Array<DateRange> {
+  const result: DateRange[] = [];
   let left = 0;
   let right = 0;
 
   if (bookings.length === 0) {
-    return [{ startTime, endTime }];
+    return [{ start, end }];
   }
 
   while (bookings[left] != null) {
-    if (right === 0) {
-      if (isAfter(bookings[right].startTime, start)) {
+    const currentBooking = bookings[left]; // Alias for bookings[left]
+
+    // Initial loop
+    if (left === right) {
+      if (isAfter(currentBooking.start, start)) {
         result.push({
           start,
-          end: bookings[right].startTime
+          end: currentBooking.start
         });
       }
       right++;
     }
 
+    // Subsequent bookings
     if (bookings[right] != null) {
-      if (isAfter(bookings[right].startTime, bookings[left].endTime)) {
+      const nextBooking = bookings[right]; // Alias for bookings[right]
+
+      if (isAfter(nextBooking.start, currentBooking.end)) {
         result.push({
-          start: bookings[left].endTime,
-          end: bookings[right].startTime
-        });
-        right++;
-        left++;
-      }
-    } else {
-      if (isAfter(end, bookings[left].endTime)) {
-        result.push({
-          start: bookings[left].endTime,
-          end
+          start: currentBooking.end,
+          end: nextBooking.start
         });
       }
 
+      right++;
+      left++;
+    } else {
+      if (isAfter(end, currentBooking.end)) {
+        result.push({
+          start: currentBooking.end,
+          end
+        });
+      }
       left++;
     }
   }

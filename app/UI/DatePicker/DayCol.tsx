@@ -1,23 +1,31 @@
-import { Booking } from '@prisma/client';
-import DatePickerColSlice from './DatePickerColSlice';
-import { getColumnPosition, invertBookings } from './DatePickerHelpers';
+import { getDate, getMonth, getYear } from 'date-fns';
+import { BookingVm } from '~/models/BookingModels';
+import DateAvailableSegment from './DateAvailableSegment';
+import DateBookedSegment from './DateBookedSegment';
+import { invertDateRanges } from './DatePickerHelpers';
+import { DateRange } from './DateRange';
+import { useDatePicker } from './useDatepicker';
 
 type DayColProps = {
   day: Date;
-  colHourStart: number;
-  colHourEnd: number;
-  bookings: Array<Booking>;
-  onClick: (booking: Booking) => void;
+  bookings: BookingVm[];
+  onClick: (booking: DateRange) => void;
 };
 
-export default function DayCol({
-  day,
-  colHourStart,
-  colHourEnd,
-  bookings = [],
-  onClick
-}: DayColProps) {
-  const invertedDates = invertBookings(day, bookings);
+export default function DayCol({ day, bookings = [], onClick }: DayColProps) {
+  const { columnHourStart, columnHourEnd } = useDatePicker();
+
+  const range = {
+    start: new Date(getYear(day), getMonth(day), getDate(day), columnHourStart),
+    end: new Date(getYear(day), getMonth(day), getDate(day), columnHourEnd)
+  };
+
+  const availableDates = invertDateRanges(
+    bookings.map(b => ({ start: b.startTime, end: b.endTime })),
+    { start: range.start, end: range.end }
+  );
+
+  // const availableDates: DateRange[] = [];
 
   return (
     <div
@@ -25,23 +33,20 @@ export default function DayCol({
     >
       {bookings &&
         bookings.map((b, i) => (
-          <DatePickerColSlice
+          <DateBookedSegment
             key={`slice-${i}`}
-            status="booked"
-            start={getColumnPosition(colHourStart, colHourEnd, b.startTime, 15)}
-            end={getColumnPosition(colHourStart, colHourEnd, b.endTime, 15)}
+            startDate={b.startTime}
+            endDate={b.endTime}
             booking={b}
           />
         ))}
-      {invertedDates &&
-        invertedDates.map((d, i) => (
-          <DatePickerColSlice
+      {availableDates &&
+        availableDates.map((d, i) => (
+          <DateAvailableSegment
             key={`slice2-${i}`}
-            status="available"
-            start={getColumnPosition(colHourStart, colHourEnd, d.start, 15)}
-            end={getColumnPosition(colHourStart, colHourEnd, d.end, 15)}
-            booking={d}
-            onClick={onClick}
+            startDate={d.start}
+            endDate={d.end}
+            handleClick={onClick}
           />
         ))}
     </div>

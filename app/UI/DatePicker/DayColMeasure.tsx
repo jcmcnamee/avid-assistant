@@ -1,24 +1,16 @@
 import { sliceStartVals } from './DatePickerHelpers';
+import { useDatePicker } from './useDatepicker';
 
-type DayColMeasureProps = {
-  colHourStart: number;
-  colHourEnd: number;
-  quantizeMinutes: number;
-};
+export default function DayColMeasure() {
+  const { columnHourStart, columnHourEnd } = useDatePicker();
 
-export default function DayColMeasure({
-  colHourStart,
-  colHourEnd,
-  quantizeMinutes
-}: DayColMeasureProps) {
   const hourMarkers: string[] = [];
-  const numSegments = ((colHourEnd - colHourStart) * 60) / quantizeMinutes;
+  // const numSegments =
+  //   ((columnHourEnd - columnHourStart) * 60) / intervalMinutes;
 
-  for (let i = 0; i <= colHourEnd - colHourStart; i++) {
-    hourMarkers[i] = `${colHourStart + i}:00`;
+  for (let i = 0; i <= columnHourEnd - columnHourStart; i++) {
+    hourMarkers[i] = `${columnHourStart + i}:00`;
   }
-
-  console.log('Hour markers: ', hourMarkers);
 
   return (
     <>

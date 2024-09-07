@@ -1,28 +1,33 @@
-import { createBooking } from '~/persistence/repositories/bookings.server';
-import BookingForm from './BookingForm';
 import { ActionFunctionArgs } from '@remix-run/node';
-import { json, redirect, useLoaderData, useParams } from '@remix-run/react';
-import { CreateBookingDto } from '~/models/BookingModels';
+import { json, redirect, useParams } from '@remix-run/react';
+import { BookingVm, CreateBookingDto } from '~/models/BookingModels';
+import { createBooking } from '~/persistence/repositories/bookings.server';
 import { getMachineBookings } from '~/persistence/repositories/machines.server';
+import BookingForm from './BookingForm';
 
 export default function BookingFormPage() {
   const params = useParams();
-  const bookings = useLoaderData<typeof loader>();
 
-  return <BookingForm machineId={params.id!} userId="1" currentBookings={bookings} />;
+  return <BookingForm machineId={params.id!} userId="1" />;
 }
 
 export async function loader({ params }: ActionFunctionArgs) {
-  const bookings = await getMachineBookings(params.id!.toString());
-  console.log('Bookings: ', bookings);
+  const result = await getMachineBookings(params.id!.toString());
 
-  return json(bookings);
+  const bookingVmList: BookingVm[] = result.bookings.map(b => ({
+    startTime: b.startTime,
+    endTime: b.endTime,
+    jobType: b.jobType,
+    notes: b.notes,
+    machineId: b.machineId,
+    userId: b.userId
+  }));
+
+  return bookingVmList;
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const formData = Object.fromEntries(await request.formData());
-
-  console.log(formData);
 
   const bookingData: CreateBookingDto = {
     startTime: new Date(formData.startTime as string),
@@ -32,7 +37,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
     machineId: Number(params.id),
     userId: Number(formData.userId)
   };
-  console.log('Bloody booking data: ', bookingData);
 
   await createBooking(bookingData);
   return redirect('/machines');
