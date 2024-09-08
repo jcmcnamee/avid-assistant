@@ -17,7 +17,7 @@ export default function Button({
   if (category === 'primary')
     return (
       <button
-        className="rounded-full bg-amber-400 px-4 py-2 font-semibold shadow-sm transition-colors duration-300 hover:bg-amber-500 focus:outline-amber-500"
+        className="rounded-full bg-amber-400 px-4 py-2 font-semibold shadow-sm transition-colors duration-300 hover:bg-amber-500 focus:outline-amber-500 disabled:text-indigo-100"
         {...props}
       >
         <div className="flex items-center gap-1">

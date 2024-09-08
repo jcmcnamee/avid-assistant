@@ -5,6 +5,7 @@ import { CreateBookingDto } from '~/models/BookingModels';
 export async function createBooking(
   bookingData: CreateBookingDto
 ): Promise<Booking> {
+  // eslint-disable-next-line no-useless-catch
   try {
     return await prisma.booking.create({
       data: {
@@ -20,3 +21,19 @@ export async function createBooking(
     throw err;
   }
 }
+
+export async function findOverlappingBookings(
+  machineId: number,
+  startDate: Date,
+  endDate: Date
+): Promise<Booking[]> {
+  const bookings = await prisma.booking.findMany({
+    where: {
+      machineId,
+      AND: [{ startTime: { lt: endDate } }, { endTime: { gt: startDate } }]
+    }
+  });
+
+  return bookings;
+}
+

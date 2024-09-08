@@ -4,7 +4,7 @@ import {
   sliceEndVals,
   sliceStartVals
 } from './DatePickerHelpers';
-import { useDatePicker } from './useDatepicker';
+import { useDatePicker } from '../../hooks/useDatepicker';
 
 type DateAvailableSegmentProps = {
   startDate: Date;

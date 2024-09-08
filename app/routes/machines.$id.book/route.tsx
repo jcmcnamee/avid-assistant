@@ -1,9 +1,13 @@
 import { ActionFunctionArgs } from '@remix-run/node';
-import { json, redirect, useParams } from '@remix-run/react';
+import { redirect, useParams } from '@remix-run/react';
 import { BookingVm, CreateBookingDto } from '~/models/BookingModels';
 import { createBooking } from '~/persistence/repositories/bookings.server';
 import { getMachineBookings } from '~/persistence/repositories/machines.server';
 import BookingForm from './BookingForm';
+import {
+  validateBookingInput,
+  ValidationErrors
+} from '~/persistence/validation.server';
 
 export default function BookingFormPage() {
   const params = useParams();
@@ -37,6 +41,15 @@ export async function action({ request, params }: ActionFunctionArgs) {
     machineId: Number(params.id),
     userId: Number(formData.userId)
   };
+
+  try {
+    console.log('Trying to validate');
+    await validateBookingInput(bookingData);
+  } catch (err) {
+    console.log('Caught error, returning error from action.');
+    // const err: ValidationErrors
+    return err as ValidationErrors;
+  }
 
   await createBooking(bookingData);
   return redirect('/machines');

@@ -1,19 +1,32 @@
 import { Link } from '@remix-run/react';
 import { LuBookOpenCheck, LuComputer, LuTimer } from 'react-icons/lu';
 import Button from '../../UI/Button';
+import { BookingVm } from '~/models/BookingModels';
+import StatusIndicator from './StatusIndicator';
 
 type MachineCardProps = {
   id: number;
   title: string;
-  status: string;
+  currentBooking?: BookingVm;
 };
 
-function MachineCard({ id, title, status }: MachineCardProps) {
+function MachineCard({ id, title, currentBooking }: MachineCardProps) {
+  if (currentBooking) console.log(currentBooking);
+
   return (
     <div className="size-full overflow-hidden rounded-lg bg-indigo-300 p-4 shadow-md">
       <div className="flex place-content-between border-b-[1px] border-black pb-1">
         <h1 className="font-bold">{title}</h1>
-        <h2>{status}</h2>
+        {currentBooking ? (
+          <StatusIndicator
+            booking={{
+              start: currentBooking.startTime,
+              end: currentBooking.endTime
+            }}
+          />
+        ) : (
+          <StatusIndicator />
+        )}
       </div>
       <div className="mt-2 grid grid-cols-[1fr_2fr]">
         <div className="align flex items-center justify-center">
@@ -36,7 +49,13 @@ function MachineCard({ id, title, status }: MachineCardProps) {
               Book
             </Button>
           </Link>
-          <p>Some booking information here</p>
+          {currentBooking ? (
+            <div>
+              <p>{`Booked by: ${currentBooking.userId}`}</p>
+              <p>{`Job: ${currentBooking.jobType}`}</p>
+              <p>{`Notes: ${currentBooking.notes}`}</p>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

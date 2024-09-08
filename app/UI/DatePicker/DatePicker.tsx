@@ -5,7 +5,7 @@ import DatePickerColTitle from './DatePickerColTitle';
 import { DateRange } from './DateRange';
 import DayCol from './DayCol';
 import DayColMeasure from './DayColMeasure';
-import { useDatePicker } from './useDatepicker';
+import { useDatePicker } from '../../hooks/useDatepicker';
 
 type DatePickerProps = {
   startDate: Date;

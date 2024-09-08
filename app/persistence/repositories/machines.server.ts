@@ -1,7 +1,9 @@
+/* eslint-disable no-useless-catch */
 import { Machine } from '@prisma/client';
 import { prisma } from '../prisma.server';
-import fs from 'fs/promises';
-import { BookingVm } from '~/models/BookingModels';
+import { endOfDay, startOfDay } from 'date-fns';
+import { MachineListVm } from '~/models/MachineModels';
+import { bookingViewModel } from '~/models/BookingModels';
 
 export async function createMachine(machineData: Machine) {
   try {
@@ -11,7 +13,9 @@ export async function createMachine(machineData: Machine) {
         isHeadless: machineData.isHeadless
       }
     });
-  } catch (err) {}
+  } catch (err) {
+    throw err;
+  }
 }
 
 // export async function getMachines() {
@@ -24,9 +28,28 @@ export async function createMachine(machineData: Machine) {
 //   return storedMachines;
 // }
 
-export async function getMachines() {
+export async function getMachines(): Promise<MachineListVm[]> {
+  const now = new Date();
+
   try {
-    const machines = prisma.machine.findMany({ orderBy: { id: 'desc' } });
+    const machines = await prisma.machine.findMany({
+      orderBy: {
+        id: 'asc'
+      },
+      include: {
+        bookings: {
+          where: {
+            startTime: {
+              lte: now
+            },
+            endTime: {
+              gte: now
+            }
+          },
+          select: bookingViewModel.select
+        }
+      }
+    });
     return machines;
   } catch (err) {
     throw err;
@@ -48,4 +71,30 @@ export async function getMachineBookings(id: string) {
   });
 
   return machineBookings;
+}
+
+export async function getMachineBookingsForDay(machineId: number, day: Date) {
+  const dayStart = startOfDay(day);
+  const dayEnd = endOfDay(day);
+
+  const dailyBookings = await prisma.machine.findUniqueOrThrow({
+    where: {
+      id: machineId
+    },
+    select: {
+      bookings: {
+        where: {
+          startTime: {
+            gte: dayStart,
+            lte: dayEnd
+          }
+        },
+        orderBy: {
+          startTime: 'asc'
+        }
+      }
+    }
+  });
+
+  return dailyBookings;
 }

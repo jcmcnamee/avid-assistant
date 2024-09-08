@@ -1,14 +1,21 @@
-import { Form, useLoaderData, useNavigate, useSubmit } from '@remix-run/react';
+import {
+  Form,
+  useActionData,
+  useLoaderData,
+  useNavigate,
+  useNavigation,
+  useSubmit
+} from '@remix-run/react';
 import { format, startOfToday } from 'date-fns';
 import { useState } from 'react';
-import { LuArrowBigLeft, LuCheck } from 'react-icons/lu';
+import { LuArrowBigLeft, LuCheck, LuHourglass } from 'react-icons/lu';
+import DatePickerProvider from '~/hooks/useDatepicker';
+import { BookingVm } from '~/models/BookingModels';
 import Button from '~/UI/Button';
 import DatePicker from '~/UI/DatePicker/DatePicker';
 import { DateRange } from '~/UI/DatePicker/DateRange';
 import Modal from '~/UI/Modal';
-import { loader } from './route';
-import { BookingVm } from '~/models/BookingModels';
-import DatePickerProvider from '~/UI/DatePicker/useDatepicker';
+import { action, loader } from './route';
 
 type BookingFormProps = {
   machineId: string;
@@ -20,7 +27,11 @@ export default function BookingForm({ machineId, userId }: BookingFormProps) {
 
   const navigate = useNavigate();
   const loaderData = useLoaderData<typeof loader>();
+  const validationErrors = useActionData<typeof action>();
   const submit = useSubmit();
+  const { state } = useNavigation();
+
+  const isSubmitting = state !== 'idle';
 
   const bookings: BookingVm[] = loaderData.map(booking => ({
     ...booking,
@@ -100,15 +111,23 @@ export default function BookingForm({ machineId, userId }: BookingFormProps) {
                 step="900"
               />
             </p>
+            <p className="col-span-2 h-4 text-red-500">
+              {validationErrors?.timeInterval && (
+                <span>{validationErrors.timeInterval}</span>
+              )}
+            </p>
             <p>
               <label htmlFor="job-type">Job:</label>
+              <br />
               <select
                 id="job-type"
                 name="jobType"
                 className="rounded-md px-2 text-xl invalid:border-2 invalid:border-red-500 focus:outline-indigo-400"
               >
-                <option>Inest</option>
+                <option>Ingest</option>
                 <option>Export</option>
+                <option>Sync & Group</option>
+                <option>Conform</option>
                 <option>General</option>
               </select>
             </p>
@@ -120,6 +139,13 @@ export default function BookingForm({ machineId, userId }: BookingFormProps) {
                 className="w-full rounded-md focus:border-4 focus:outline-indigo-400"
               />
             </p>
+            {/* {validationErrors && (
+              <ul>
+                {Object.values(validationErrors).map(error => (
+                  <li key={error}>{error}</li>
+                ))}
+              </ul>
+            )} */}
             <div>
               <Button
                 type="button"
@@ -133,9 +159,16 @@ export default function BookingForm({ machineId, userId }: BookingFormProps) {
             <div className="justify-self-end">
               <Button
                 category="primary"
-                iconRight={<LuCheck className="text-2xl" />}
+                iconRight={
+                  isSubmitting ? (
+                    <LuHourglass />
+                  ) : (
+                    <LuCheck className="text-2xl" />
+                  )
+                }
+                disabled={isSubmitting}
               >
-                Submit
+                {isSubmitting ? 'Booking...' : 'Submit'}
               </Button>
             </div>
           </Form>

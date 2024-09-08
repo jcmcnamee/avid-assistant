@@ -1,28 +1,35 @@
-import { Machine } from '@prisma/client';
 import { MetaFunction } from '@remix-run/node';
 import {
   isRouteErrorResponse,
   json,
   Outlet,
-  ScrollRestoration,
   useLoaderData,
   useRouteError
 } from '@remix-run/react';
-import isAnError from '~/utils/isAnError';
+import { MachineListVm } from '~/models/MachineModels';
 import { getMachines } from '~/persistence/repositories/machines.server';
+import isAnError from '~/utils/isAnError';
 import MachineCard from './MachineCard';
 
 export default function MachineLayout() {
-  const machines = useLoaderData<typeof loader>();
+  const loaderData = useLoaderData<typeof loader>();
+  const machines: MachineListVm[] = loaderData.map(machine => ({
+    ...machine,
+    bookings: machine.bookings.map(booking => ({
+      ...booking,
+      startTime: new Date(booking.startTime),
+      endTime: new Date(booking.endTime)
+    }))
+  }))
 
   return (
     <>
       <div className="grid auto-rows-auto grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {machines.map((machine: Machine, i: number) => (
+        {machines.map((machine: MachineListVm, i: number) => (
           <MachineCard
             id={machine.id}
             title={machine.name}
-            status="Available"
+            currentBooking={machine.bookings[0]}
             key={i}
           />
         ))}
@@ -67,13 +74,23 @@ export function ErrorBoundary() {
 }
 
 export async function loader() {
-  const machines = await getMachines();
+  const result = await getMachines();
 
-  if (!machines || machines.length === 0) {
+  if (!result || result.length === 0) {
     throw json(
       { message: 'No machines found, please add some machines.' },
       { status: 402, statusText: 'No content' }
     );
   }
-  return json(machines);
+
+  const machineList: MachineListVm[] = result.map(m => ({
+    id: m.id,
+    name: m.name,
+    isHeadless: m.isHeadless,
+    bookings: m.bookings
+  }));
+
+  // const machineList: MachineListVm[] = result.map(convertBookingDates)
+
+  return machineList;
 }

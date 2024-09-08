@@ -1,12 +1,17 @@
-import { PrismaClient } from '@prisma/client';
+import { AppUser, PrismaClient } from '@prisma/client';
 // import { machines } from './machines';
 
 const prisma = new PrismaClient();
 
 async function seed() {
   try {
+    console.log('Seeding machines...');
     for (const machine of machines) {
       await prisma.machine.create({ data: machine });
+    }
+    for (const user of users) {
+      console.log(`Seeding user ${user.name}`);
+      await prisma.appUser.create({ data: user });
     }
   } catch (err) {
     console.error('Error seeding data: ', err);
@@ -79,6 +84,23 @@ const machines = [
   {
     name: 'Assist17',
     isHeadless: false
+  }
+];
+
+const users: AppUser[] = [
+  {
+    id: 1,
+    name: 'James McNamee',
+    email: 'jcmcnamee@hotmail.com',
+    password: 'admin',
+    role: 'admin'
+  },
+  {
+    id: 2,
+    name: 'Kath Adam',
+    email: '',
+    password: 'password',
+    role: 'user'
   }
 ];
 

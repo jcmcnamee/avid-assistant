@@ -26,6 +26,9 @@ model Machine {
 model AppUser {
   id            Int     @id @default(autoincrement())
   name          String  @unique @db.VarChar(50)
+  email         String  @unique @db.VarChar(254)
+  password      String  @unique @db.VarChar(128)
+  role          String  @db.VarChar(50)
 
   bookings    Booking[]
 

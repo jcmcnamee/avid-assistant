@@ -11,7 +11,7 @@ const createBookingDto = Prisma.validator<Prisma.BookingDefaultArgs>()({
   }
 });
 
-const bookingViewModel = Prisma.validator<Prisma.BookingDefaultArgs>()({
+export const bookingViewModel = Prisma.validator<Prisma.BookingDefaultArgs>()({
   select: {
     startTime: true,
     endTime: true,
@@ -21,6 +21,7 @@ const bookingViewModel = Prisma.validator<Prisma.BookingDefaultArgs>()({
     userId: true
   }
 });
+
 
 export type CreateBookingDto = Prisma.BookingGetPayload<
   typeof createBookingDto

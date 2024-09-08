@@ -4,7 +4,7 @@ import DateAvailableSegment from './DateAvailableSegment';
 import DateBookedSegment from './DateBookedSegment';
 import { invertDateRanges } from './DatePickerHelpers';
 import { DateRange } from './DateRange';
-import { useDatePicker } from './useDatepicker';
+import { useDatePicker } from '../../hooks/useDatepicker';
 
 type DayColProps = {
   day: Date;
