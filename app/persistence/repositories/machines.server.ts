@@ -1,9 +1,8 @@
 /* eslint-disable no-useless-catch */
 import { Machine } from '@prisma/client';
-import { prisma } from '../prisma.server';
 import { endOfDay, startOfDay } from 'date-fns';
-import { MachineListVm } from '~/models/MachineModels';
-import { bookingViewModel } from '~/models/BookingModels';
+import { MachineListVm, machineListVmSelect } from '~/models/MachineModels';
+import { prisma } from '../prisma.server';
 
 export async function createMachine(machineData: Machine) {
   try {
@@ -28,27 +27,14 @@ export async function createMachine(machineData: Machine) {
 //   return storedMachines;
 // }
 
-export async function getMachines(): Promise<MachineListVm[]> {
-  const now = new Date();
+export async function getMachinesWithCurrentBooking(): Promise<MachineListVm[]> {
 
   try {
     const machines = await prisma.machine.findMany({
       orderBy: {
         id: 'asc'
       },
-      include: {
-        bookings: {
-          where: {
-            startTime: {
-              lte: now
-            },
-            endTime: {
-              gte: now
-            }
-          },
-          select: bookingViewModel.select
-        }
-      }
+      select: machineListVmSelect
     });
     return machines;
   } catch (err) {
@@ -56,6 +42,7 @@ export async function getMachines(): Promise<MachineListVm[]> {
   }
 }
 
+// This should probably be in the bookings.server repo....
 export async function getMachineBookings(id: string) {
   const machineBookings = prisma.machine.findUniqueOrThrow({
     where: {

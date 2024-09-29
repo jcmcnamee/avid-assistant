@@ -1,4 +1,4 @@
-import { MetaFunction } from '@remix-run/node';
+import { MetaFunction, SerializeFrom } from '@remix-run/node';
 import {
   isRouteErrorResponse,
   json,
@@ -7,20 +7,16 @@ import {
   useRouteError
 } from '@remix-run/react';
 import { MachineListVm } from '~/models/MachineModels';
-import { getMachines } from '~/persistence/repositories/machines.server';
+import { getMachinesWithCurrentBooking } from '~/persistence/repositories/machines.server';
 import isAnError from '~/utils/isAnError';
+import { deserializeMachineList } from '~/utils/mappings.client';
 import MachineCard from './MachineCard';
 
 export default function MachineLayout() {
-  const loaderData = useLoaderData<typeof loader>();
-  const machines: MachineListVm[] = loaderData.map(machine => ({
-    ...machine,
-    bookings: machine.bookings.map(booking => ({
-      ...booking,
-      startTime: new Date(booking.startTime),
-      endTime: new Date(booking.endTime)
-    }))
-  }))
+  const loaderData: SerializeFrom<MachineListVm[]> =
+    useLoaderData<typeof loader>();
+
+  const machines: MachineListVm[] = deserializeMachineList(loaderData);
 
   return (
     <>
@@ -74,23 +70,14 @@ export function ErrorBoundary() {
 }
 
 export async function loader() {
-  const result = await getMachines();
+  const machineList: MachineListVm[] = await getMachinesWithCurrentBooking();
 
-  if (!result || result.length === 0) {
+  if (!machineList || machineList.length === 0) {
     throw json(
       { message: 'No machines found, please add some machines.' },
       { status: 402, statusText: 'No content' }
     );
   }
 
-  const machineList: MachineListVm[] = result.map(m => ({
-    id: m.id,
-    name: m.name,
-    isHeadless: m.isHeadless,
-    bookings: m.bookings
-  }));
-
-  // const machineList: MachineListVm[] = result.map(convertBookingDates)
-
-  return machineList;
+  return json(machineList);
 }

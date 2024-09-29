@@ -10,23 +10,29 @@ import { format, startOfToday } from 'date-fns';
 import { useState } from 'react';
 import { LuArrowBigLeft, LuCheck, LuHourglass } from 'react-icons/lu';
 import DatePickerProvider from '~/hooks/useDatepicker';
-import { BookingVm } from '~/models/BookingModels';
+import { BookingVm, CreateBookingDto } from '~/models/BookingModels';
 import Button from '~/UI/Button';
 import DatePicker from '~/UI/DatePicker/DatePicker';
 import { DateRange } from '~/UI/DatePicker/DateRange';
 import Modal from '~/UI/Modal';
-import { action, loader } from './route';
+import { action, loader } from '../routes/machines.$id.book/route';
+import { SerializeFrom } from '@remix-run/node';
 
 type BookingFormProps = {
-  machineId: string;
+  machineId: number;
   userId: string;
+  bookingData?: CreateBookingDto;
 };
 
-export default function BookingForm({ machineId, userId }: BookingFormProps) {
+export default function BookingForm({
+  machineId,
+  userId,
+  bookingData
+}: BookingFormProps) {
   const [dateRange, setDateRange] = useState<DateRange | null>(null);
 
   const navigate = useNavigate();
-  const loaderData = useLoaderData<typeof loader>();
+  const loaderData: SerializeFrom<BookingVm[]> = useLoaderData<typeof loader>();
   const validationErrors = useActionData<typeof action>();
   const submit = useSubmit();
   const { state } = useNavigation();
@@ -79,7 +85,7 @@ export default function BookingForm({ machineId, userId }: BookingFormProps) {
       ) : (
         <>
           <Form
-            method="POST"
+            method={bookingData ? 'PUT' : 'POST'}
             className="grid grid-cols-2 gap-x-12 gap-y-4"
             onSubmit={handleSubmit}
           >

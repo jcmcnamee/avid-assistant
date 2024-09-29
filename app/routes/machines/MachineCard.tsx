@@ -3,6 +3,7 @@ import { LuBookOpenCheck, LuComputer, LuTimer } from 'react-icons/lu';
 import Button from '../../UI/Button';
 import { BookingVm } from '~/models/BookingModels';
 import StatusIndicator from './StatusIndicator';
+import MachineCardBookingDetails from './MachineCardBookingDetails';
 
 type MachineCardProps = {
   id: number;
@@ -50,11 +51,7 @@ function MachineCard({ id, title, currentBooking }: MachineCardProps) {
             </Button>
           </Link>
           {currentBooking ? (
-            <div>
-              <p>{`Booked by: ${currentBooking.userId}`}</p>
-              <p>{`Job: ${currentBooking.jobType}`}</p>
-              <p>{`Notes: ${currentBooking.notes}`}</p>
-            </div>
+            <MachineCardBookingDetails booking={currentBooking} />
           ) : null}
         </div>
       </div>
